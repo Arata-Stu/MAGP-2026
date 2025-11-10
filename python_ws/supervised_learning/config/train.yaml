@@ -1,0 +1,42 @@
+data:
+  path: /path/to/dataset
+  sequence_length: 10
+  resolution_hw: [128, 128] ## RGBのときのみ利用  
+  keys_to_load: ["scan", "accel", "steer", ]
+  # keys_to_load: ["scan", "accel", "steer", "odom", "rgb"]
+
+  random:
+    train:
+      batch_size: 8
+      num_workers: 4
+  stream:
+    train:
+      batch_size: 8
+      num_workers: 4
+    valid:
+      batch_size: 2
+      num_workers: 2
+
+model:
+  name: TinyLidarNet
+  input_dim: 1081
+  output_dim: 2
+  ckpt_path: null
+
+
+training:
+  learning_rate: 0.0001
+  log_interval: 1000       # 訓練損失のログ間隔 (ステップ)
+  
+  # --- ステップベースの制御 ---
+  epochs: 9999              # データセットを無限にループさせるため、非常に大きな値に設定
+  max_steps: 100000         # 訓練を終了する総ステップ数
+  val_interval_steps: 1000
+
+
+log_dir: ./logs/train/${model.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}  
+ckpt_dir: ./ckpts/train/${model.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}  
+
+hydra:
+  run:
+    dir: ./outputs/train/${model.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
